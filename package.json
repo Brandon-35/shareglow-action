@@ -1,0 +1,6 @@
+{
+  "name": "shareglow-action",
+  "private": true,
+  "type": "module",
+  "license": "MIT"
+}

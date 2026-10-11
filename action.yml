@@ -1,0 +1,45 @@
+name: Shareglow OG preview
+description: Fail the build when a page is missing Open Graph tags, and keep one preview comment on the pull request.
+author: Shareglow
+branding:
+  icon: image
+  color: orange
+inputs:
+  api-key:
+    description: Shareglow API key (sk_live_...). Pass it from a repository secret.
+    required: true
+  urls:
+    description: Pages to scan, one URL per line (changed pages, or the preview deployment URL).
+    required: true
+  github-token:
+    description: Token used to post the PR comment.
+    default: ${{ github.token }}
+  fail-on:
+    description: "Fail the step on: error (default), warning or never."
+    default: error
+  comment:
+    description: Post or update the pull request comment (true or false).
+    default: "true"
+  api-url:
+    description: Shareglow API origin.
+    default: https://app.getshareglow.com
+outputs:
+  result:
+    description: pass or fail.
+    value: ${{ steps.scan.outputs.result }}
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+    - id: scan
+      shell: bash
+      run: node "$GITHUB_ACTION_PATH/src/main.ts"
+      env:
+        SHAREGLOW_API_KEY: ${{ inputs.api-key }}
+        SHAREGLOW_URLS: ${{ inputs.urls }}
+        SHAREGLOW_GITHUB_TOKEN: ${{ inputs.github-token }}
+        SHAREGLOW_FAIL_ON: ${{ inputs.fail-on }}
+        SHAREGLOW_COMMENT: ${{ inputs.comment }}
+        SHAREGLOW_API_URL: ${{ inputs.api-url }}
